@@ -9,13 +9,14 @@ const app = express();
 app.use(morgan('dev')); // log request
 app.use(helmet()); // secure http headers
 app.use(compression()); // compress response
+app.use(express.json()); // parse json body
 
 // init db
 require('./dbs/init.mongodb');
 const { checkOverLoad } = require('./helpers/check.connect');
 // checkOverLoad();
 // init routes
-
+app.use('/', require('./routes/index'));
 // handling error
 
 module.exports = app;
