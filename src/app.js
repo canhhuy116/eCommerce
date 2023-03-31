@@ -10,6 +10,7 @@ app.use(morgan('dev')); // log request
 app.use(helmet()); // secure http headers
 app.use(compression()); // compress response
 app.use(express.json()); // parse json body
+app.use(express.urlencoded({ extended: true })); // parse urlencoded body
 
 // init db
 require('./dbs/init.mongodb');
