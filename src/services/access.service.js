@@ -17,6 +17,11 @@ const RoleShop = {
 };
 
 class AccessService {
+  static logout = async (keyStore) => {
+    const delKey = await KeyTokenService.removeKeyById(keyStore._id);
+    return delKey;
+  };
+
   static signIn = async ({ email, password, refreshToken = null }) => {
     const foundShop = await findByEmail({ email });
     console.log('foundShop', foundShop);
@@ -54,12 +59,10 @@ class AccessService {
       refreshToken: tokens.refreshToken,
       privateKey,
       publicKey,
+      userId,
     });
     return {
-      shop: getInfoData({
-        fields: ['_id', 'name', 'email'],
-        object: foundShop,
-      }),
+      shop: getInfoData(['_id', 'name', 'email', 'roles'], foundShop),
       tokens,
     };
   };
