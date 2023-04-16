@@ -34,33 +34,26 @@ class AccessService {
       throw new UnauthorizedError('Password is incorrect');
     }
 
-    const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-      modulusLength: 4096,
-      publicKeyEncoding: {
-        type: 'pkcs1',
-        format: 'pem',
-      },
-      privateKeyEncoding: {
-        type: 'pkcs1',
-        format: 'pem',
-      },
-    });
+    const publicKey = crypto.randomBytes(256).toString('base64');
+    const privateKey = crypto.randomBytes(256).toString('base64');
 
     const { _id: userId } = foundShop;
 
     const tokens = await createTokenPair(
       { userId, roles: foundShop.roles },
       publicKey,
-      privateKey,
-      userId
+      privateKey
     );
 
-    await KeyTokenService.createKeyToken({
-      refreshToken: tokens.refreshToken,
-      privateKey,
-      publicKey,
+    const keyStore = await KeyTokenService.createKeyToken({
       userId,
+      publicKey,
+      privateKey,
+      refreshToken: tokens.refreshToken,
     });
+
+    console.log('keyStore', keyStore);
+
     return {
       shop: getInfoData(['_id', 'name', 'email', 'roles'], foundShop),
       tokens,
@@ -84,41 +77,29 @@ class AccessService {
 
     if (newShop) {
       // created privateKey, publicKey
-      const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
-        modulusLength: 4096,
-        publicKeyEncoding: {
-          type: 'pkcs1',
-          format: 'pem',
-        },
-        privateKeyEncoding: {
-          type: 'pkcs1',
-          format: 'pem',
-        },
-      });
+      const publicKey = crypto.randomBytes(256).toString('base64');
+      const privateKey = crypto.randomBytes(256).toString('base64');
 
       console.log('privateKey', privateKey);
       console.log('publicKey', publicKey);
 
-      const publicKeyString = await KeyTokenService.createKeyToken({
+      const keyStore = await KeyTokenService.createKeyToken({
         userId: newShop._id,
         publicKey,
+        privateKey,
       });
 
-      if (!publicKeyString) {
+      if (!keyStore) {
         return {
           code: '50001',
-          message: 'publicKeyString error',
+          message: 'keyStore error',
           status: 'error',
         };
       }
 
-      const publicKeyObject = crypto.createPublicKey(publicKeyString);
-
-      console.log('publicKeyObject', publicKeyObject);
-
       const tokens = await createTokenPair(
         { userId: newShop._id, roles: newShop.roles },
-        publicKeyObject,
+        publicKey,
         privateKey
       );
 
