@@ -32,6 +32,7 @@ app.use((error, req, res, next) => {
   return res.status(statusCode).json({
     status: 'error',
     code: statusCode,
+    stack: process.env.NODE_ENV === 'production' ? '🥞' : error.stack,
     message: error.message || 'Internal Server Error',
   });
 });

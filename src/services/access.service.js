@@ -3,9 +3,9 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const keyTokenModel = require('../models/keyToken.model');
 const KeyTokenService = require('./keyToken.service');
-const { createTokenPair } = require('../auth/authUtils');
+const { createTokenPair, verifyJWT } = require('../auth/authUtils');
 const { getInfoData } = require('../utils');
-const { BadRequestError } = require('../core/error.response');
+const { BadRequestError, ForbiddenError } = require('../core/error.response');
 const { findByEmail } = require('./shop.service');
 const { UnauthorizedError } = require('../core/error.response');
 
@@ -17,6 +17,47 @@ const RoleShop = {
 };
 
 class AccessService {
+  /*
+    check this token used?
+  */
+  static handleRefreshToken = async ({ refreshToken, user, keyStore }) => {
+    const { userId, roles } = user;
+    if (keyStore.refreshTokensUsed.includes(refreshToken)) {
+      await KeyTokenService.deleteKeyTokenByUserId(userId);
+
+      throw new ForbiddenError('Token is used');
+    }
+
+    if (keyStore.refreshToken !== refreshToken) {
+      throw new BadRequestError('Token is not found');
+    }
+
+    const foundShop = await shopModel.findById(userId);
+    if (!foundShop) {
+      throw new BadRequestError('Shop not found');
+    }
+
+    const tokens = await createTokenPair(
+      { userId, roles },
+      keyStore.publicKey,
+      keyStore.privateKey
+    );
+
+    await keyStore.updateOne({
+      $set: {
+        refreshToken: tokens.refreshToken,
+      },
+      $addToSet: {
+        refreshTokensUsed: refreshToken,
+      },
+    });
+
+    return {
+      user,
+      tokens,
+    };
+  };
+
   static logout = async (keyStore) => {
     const delKey = await KeyTokenService.removeKeyById(keyStore._id);
     return delKey;
