@@ -45,10 +45,7 @@ const authentication = asyncHandler(async (req, res, next) => {
     throw new NotFoundError('Key store not found');
   }
 
-  if (
-    req.headers[HEADER.REFRESHTOKEN] &&
-    req.originalUrl === '/v1/api/shop/handleRefreshToken'
-  ) {
+  if (req.headers[HEADER.REFRESHTOKEN] && req.originalUrl === '/v1/api/shop/handleRefreshToken') {
     try {
       const refreshToken = req.headers[HEADER.REFRESHTOKEN];
       const decodeUser = await JWT.verify(refreshToken, keyStore.privateKey);
@@ -78,6 +75,7 @@ const authentication = asyncHandler(async (req, res, next) => {
     }
 
     req.keyStore = keyStore;
+    req.user = decodeUser;
     return next();
   } catch (error) {
     throw error;
