@@ -26,19 +26,13 @@ class ErrorResponse extends Error {
 }
 
 class BadRequestError extends ErrorResponse {
-  constructor(
-    message = ReasonPhrase.BAD_REQUEST,
-    status = StatusCode.BAD_REQUEST
-  ) {
+  constructor(message = ReasonPhrase.BAD_REQUEST, status = StatusCode.BAD_REQUEST) {
     super(message, status);
   }
 }
 
 class UnauthorizedError extends ErrorResponse {
-  constructor(
-    message = ReasonPhrase.UNAUTHORIZED,
-    status = StatusCode.UNAUTHORIZED
-  ) {
+  constructor(message = ReasonPhrase.UNAUTHORIZED, status = StatusCode.UNAUTHORIZED) {
     super(message, status);
   }
 }
@@ -62,19 +56,13 @@ class ConflictError extends ErrorResponse {
 }
 
 class InternalServerError extends ErrorResponse {
-  constructor(
-    message = ReasonPhrase.INTERNAL_SERVER_ERROR,
-    status = StatusCode.INTERNAL_SERVER_ERROR
-  ) {
+  constructor(message = ReasonPhrase.INTERNAL_SERVER_ERROR, status = StatusCode.INTERNAL_SERVER_ERROR) {
     super(message, status);
   }
 }
 
 class ServiceUnavailableError extends ErrorResponse {
-  constructor(
-    message = ReasonPhrase.SERVICE_UNAVAILABLE,
-    status = StatusCode.SERVICE_UNAVAILABLE
-  ) {
+  constructor(message = ReasonPhrase.SERVICE_UNAVAILABLE, status = StatusCode.SERVICE_UNAVAILABLE) {
     super(message, status);
   }
 }

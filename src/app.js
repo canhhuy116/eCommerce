@@ -18,7 +18,7 @@ const { checkOverLoad } = require('./helpers/check.connect');
 // checkOverLoad();
 
 // init routes
-app.use('/', require('./routes/index'));
+app.use('/v1/api', require('./routes/index'));
 
 // handling error
 app.use((req, res, next) => {

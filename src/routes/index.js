@@ -8,7 +8,7 @@ router.use(apiKey);
 // check permission
 router.use(permission('0000'));
 
-router.use('/v1/api', require('./access'));
-router.use('/v1/api', require('./product'));
+router.use('/shop', require('./access'));
+router.use('/product', require('./product'));
 
 module.exports = router;
